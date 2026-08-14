@@ -1,0 +1,238 @@
+# ---------------------------------------------------------------------------
+# -- Introduction
+
+# This EDA project explains how the 2026 Cyclospora outbreak affected
+# public concern, food-safety behavior, and fresh-produce prices in the United States
+# ---------------------------------------------------------------------------
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+from pytrends.request import TrendReq
+
+# ---------------------------------------------------------------------------
+# -- Data
+
+outbreak = pd.read_csv("/Users/anthonygray/Desktop/cdc/outbreak.csv")
+amc = pd.read_csv("/Users/anthonygray/Desktop/cdc/amc.csv")
+
+# ---------------------------------------------------------------------------
+# -- Clean Up
+
+state_abbrev = {
+    'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR',
+    'California': 'CA', 'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 
+    'Florida': 'FL', 'Georgia': 'GA', 'Idaho': 'ID', 'Illinois': 'IL',
+    'Indiana': 'IN', 'Iowa': 'IA', 'Kansas': 'KS', 'Kentucky': 'KY',
+    'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD', 'Massachusetts': 'MA',
+    'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
+    'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH',
+    'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC',
+    'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK', 'Oregon': 'OR',
+    'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+    'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT',
+    'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV',
+    'Wisconsin': 'WI', 'Wyoming': 'WY'
+}
+
+
+# ---------------------------------------------------------------------------
+
+st.title("Cyclospora Outbreak 2026") 
+st.text("Every summer, Cyclospora finds its way into our lettuce and berries causing people to contract horrendous stomach aches. This EDA project focuses on the main question: how do Cyclospora outbreaks affect consumer concern and behavior around fresh produce?")
+st.header("2026 Progression")
+st.write("Note: The true number of people sick with cyclosporiasis is likely higher than the number reported below. Some people recover without medical care and are not tested for Cyclospora.")
+
+outbreak["State_Abbrev"] = outbreak["Location"].map(state_abbrev)
+
+case_order = [
+    "N/A",
+    "1 to 10",
+    "1 to 49",
+    "11 to 30",
+    "31 to 80",
+    "50 to 199",
+    "81 to 160",
+    "161 to 300",
+    "200 to 499",
+    "301 to 500",
+    "500 to 999",
+    "901 to 2100",
+    "1000 to 3999",
+    "1000 to 4000",
+    "4000 to 6999"
+]
+
+
+case_colors = {
+    "N/A": "#E5E7EB",
+    "1 to 10": "#EFF6FF",
+    "1 to 49": "#DBEAFE",
+    "11 to 30": "#BFDBFE",
+    "31 to 80": "#93C5FD",
+    "50 to 199": "#60A5FA",
+    "81 to 160": "#3B82F6",
+    "161 to 300": "#2583EB",
+    "200 to 499": "#1D6FD1",
+    "301 to 500": "#1D5EBA",
+    "500 to 999": "#1E4FA3",
+    "901 to 2100": "#1E428A",
+    "1000 to 3999": "#1E3A78",
+    "1000 to 4000": "#172F63",
+    "4000 to 6999": "#0F234A"
+}
+
+
+selected_date = st.selectbox(
+    "Select a reporting date",
+    outbreak["Date"].unique()
+)
+
+outbreak_by_date = outbreak[
+    outbreak["Date"] == selected_date
+]
+
+
+fig = px.choropleth(
+    outbreak_by_date,
+    locations="State_Abbrev",
+    locationmode="USA-states",
+    color="Number of Sick People",
+    scope="usa",
+    hover_name="Location",
+    hover_data={
+        "Number of Sick People": True,
+        "State_Abbrev": False,
+        "Date": False
+    },
+    color_discrete_map=case_colors,
+    category_orders={
+        "Number of Sick People": case_order
+    }
+)
+
+fig.update_traces(
+    marker_line_color="black",
+    marker_line_width=0.5
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+# ---------------------------------------------------------------------------
+# Google Trends helper (cached + retries + graceful failure)
+# ---------------------------------------------------------------------------
+@st.cache_data(ttl=3600, show_spinner="Fetching Google Trends data...")
+def get_trends(keywords, timeframe, geo='US'):
+    """
+    Fetch Google Trends interest-over-time for a list of keywords.
+    Cached for 1 hour so Streamlit reruns don't re-hit Google and
+    trigger 429 (TooManyRequestsError).
+    """
+    try:
+        pytrends = TrendReq(hl='en-US', tz=360, retries=3, backoff_factor=1.0)
+        pytrends.build_payload(keywords, timeframe=timeframe, geo=geo)
+        df = pytrends.interest_over_time()
+        return df.reset_index()
+    except Exception as e:
+        st.warning(f"Google Trends request failed for {keywords}: {e}")
+        return pd.DataFrame()
+
+
+def plot_trends(trends_data, keywords, title):
+    """Plot trends data if available, otherwise show a friendly message."""
+    if trends_data.empty:
+        st.info(f"Trends data unavailable right now for '{title}' — try again later.")
+        return
+    # isPartial column can exist and isn't something we want plotted
+    y_cols = [k for k in keywords if k in trends_data.columns]
+    fig = px.line(trends_data, x="date", y=y_cols, title=title)
+    st.plotly_chart(fig)
+
+
+# ---------------------------------------------------------------------------
+# Google Trends - Fast Food Chains
+# ---------------------------------------------------------------------------
+st.header("Google Trends")
+keywords_fastfood = [
+    "Is Taco Bell safe to eat",
+    "is chipotle safe to eat right now",
+    "is five guys lettuce safe",
+    "is mcdonalds lettuce safe"
+]
+trends_fastfood = get_trends(keywords_fastfood, '2026-04-01 2026-08-01')
+plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chains")
+
+
+# ---------------------------------------------------------------------------
+# Google Trends - Grocery Stores
+# ---------------------------------------------------------------------------
+keywords_grocery = [
+    "is trader joes lettuce safe",
+    "is costco lettuce safe to eat",
+    "is aldi lettuce safe to eat",
+    "is whole foods lettuce safe to eat"
+]
+trends_grocery = get_trends(keywords_grocery, '2026-07-01 2026-08-01')
+plot_trends(trends_grocery, keywords_grocery, "Grocery Stores")
+
+st.write("What happened on July 19th that warranted people to look up if lettuce is safe?")
+
+
+# ---------------------------------------------------------------------------
+# Google Trends - Home Cooking Shift
+# ---------------------------------------------------------------------------
+keywords_homecooking = [
+    "how to wash fruit"
+]
+
+trends_homecooking = get_trends(keywords_homecooking, '2026-01-01 2026-08-07')
+plot_trends(trends_homecooking, keywords_homecooking, "Home Cooking Shift")
+
+
+#Produce prices
+st.header("Produce Prices")
+
+amc["report_date"] = pd.to_datetime(amc["report_date"])
+
+foods = ["Lettuce, Iceberg", "Lettuce, Boston", "Lettuce, Green Leaf", "Lettuce, Red Leaf", "Lettuce, Romaine", "Carrots", "Cabbage", "Broccoli"]
+
+selected = amc[
+    amc["commodity"].isin(foods)
+]
+
+high = (
+    selected.groupby(
+        ["report_date", "commodity"],
+        as_index=False
+    )["high_price"]
+    .mean()
+    .sort_values("report_date")
+)
+
+fig1 = px.line(high, x="report_date", y="high_price", color="commodity")
+st.plotly_chart(fig1)
+
+fig1.update_xaxes(
+    range=["2026-01-01", "2026-08-01"]
+)
+
+
+low = (
+    selected.groupby(
+        ["report_date", "commodity"],
+        as_index=False
+    )["low_price"]
+    .mean()
+    .sort_values("report_date")
+)
+
+fig2 = px.line(low, x="report_date", y="low_price", color="commodity")
+st.plotly_chart(fig2)
+
+fig2.update_xaxes(
+    range=["2026-01-01", "2026-08-01"]
+)
+
