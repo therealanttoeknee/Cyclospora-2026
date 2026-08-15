@@ -59,7 +59,7 @@ state_abbrev = {
 
 # ---------------------------------------------------------------------------
 
-st.title("Cyclospora Outbreak 2026") 
+st.title("Cyclospora Outbreak 2026 EDA") 
 st.text("Every summer, Cyclospora finds its way into our lettuce and berries causing people to contract horrendous stomach aches. This EDA project focuses on the main question: how do Cyclospora outbreaks affect consumer concern and behavior around fresh produce?")
 st.header("2026 Progression")
 st.write("Note: The true number of people sick with cyclosporiasis is likely higher than the number reported below. Some people recover without medical care and are not tested for Cyclospora.")
