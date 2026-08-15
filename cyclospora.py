@@ -15,10 +15,10 @@ from pytrends.request import TrendReq
 
 #Outbreak is a .csv file I created using CDC data and the wayback machine to count
 #the updates to the CDC's chart over time.
-outbreak = pd.read_csv("/Users/anthonygray/Desktop/cdc/outbreak.csv")
+outbreak = pd.read_csv("data/outbreak.csv")
 
 #
-amc = pd.read_csv("/Users/anthonygray/Desktop/cdc/amc.csv")
+amc = pd.read_csv("data/amc.csv")
 
 # ---------------------------------------------------------------------------
 # -- Clean Up
