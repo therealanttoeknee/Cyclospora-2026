@@ -1,2 +1,4 @@
-import plotly.express as px
-from pytrends.request import TrendReq 
+streamlit==1.61.1
+pandas==3.0.5
+plotly
+pytrends
