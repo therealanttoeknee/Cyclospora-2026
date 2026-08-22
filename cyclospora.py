@@ -62,14 +62,10 @@ state_abbrev = {
 st.title("Cyclospora Outbreak 2026 EDA") 
 st.text(
     "Cyclospora finds its way into our lettuce and berries every summer, causing people "
-    "extreme stomach pains and fatigue.\n"
-    "How did the 2026 Cyclospora outbreak affect "
+    "extreme stomach pains and fatigue. How did the 2026 Cyclospora outbreak affect "
     "consumer concern and behavior around produce?"
 )
 st.header("2026 Progression")
-st.write("Note: The true number of people sick with cyclosporiasis is likely higher "
-"than the number reported below. Some people recover without medical care and are \n"
-"not tested for Cyclospora.")
 
 outbreak["State_Abbrev"] = outbreak["Location"].map(state_abbrev)
 
@@ -146,8 +142,9 @@ fig.update_traces(
 
 st.plotly_chart(fig, use_container_width=True)
 
-
-
+st.write("Note: The true number of people sick with cyclosporiasis is likely higher "
+"than the number reported below. Some people recover without medical care and are "
+"not tested for Cyclospora.")
 
 # ---------------------------------------------------------------------------
 # Google Trends helper (cached + retries + graceful failure)
@@ -183,24 +180,18 @@ def plot_trends(trends_data, keywords, title):
 # ---------------------------------------------------------------------------
 # Google Trends - Fast Food Chains
 # ---------------------------------------------------------------------------
-st.header("Google Trends 2025 vs. 2026")
-
+st.header("Google Trends 2026 vs. 2025")
+st.write("
 
 keywords_fastfood = [
-    "Is Taco Bell safe to eat",
-    "is chipotle safe to eat right now",
-    "is five guys lettuce safe",
-    "is mcdonalds lettuce safe"
+    "is taco bell lettuce safe",
+    "is mcdonalds lettuce safe",
+    "is burger king lettuce safe",
+    "is chipotle lettuce safe"
 ]
 trends_fastfood = get_trends(keywords_fastfood, '2026-05-01 2026-08-13')
 plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chains 2026")
 
-keywords_fastfood = [
-    "Is Taco Bell safe to eat",
-    "is chipotle safe to eat right now",
-    "is five guys lettuce safe",
-    "is mcdonalds lettuce safe"
-]
 trends_fastfood = get_trends(keywords_fastfood, '2025-01-01 2025-12-01')
 plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chains 2025")
 
