@@ -180,8 +180,8 @@ def plot_trends(trends_data, keywords, title):
 # ---------------------------------------------------------------------------
 # Google Trends - Fast Food Chains
 # ---------------------------------------------------------------------------
-st.header("Google Trends 2026 vs. 2025")
-st.write("lorem ipsum")
+st.header("Fast Food 🍔")
+st.write("Compared to 2025, the average of these keywords were up over 5,000% compared to 2025.")
 
 keywords_fastfood = [
     "is taco bell lettuce safe",
@@ -189,24 +189,18 @@ keywords_fastfood = [
     "is burger king lettuce safe",
     "is chipotle lettuce safe"
 ]
-trends_fastfood = get_trends(keywords_fastfood, '2026-05-01 2026-08-13')
-plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chains 2026")
+trends_fastfood = get_trends(keywords_fastfood, '2026-05-01 2026-08-22')
+plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chain Google Trend Interest (2026)")
 
 trends_fastfood = get_trends(keywords_fastfood, '2025-01-01 2025-12-01')
-plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chains 2025")
+plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chain Google Trend Interest (2025)")
 
 
 # ---------------------------------------------------------------------------
 # Google Trends - Grocery Stores
 # ---------------------------------------------------------------------------
-keywords_grocery = [
-    "is trader joes lettuce safe",
-    "is costco lettuce safe to eat",
-    "is aldi lettuce safe to eat",
-    "is whole foods lettuce safe to eat"
-]
-trends_grocery = get_trends(keywords_grocery, '2026-07-01 2026-08-13')
-plot_trends(trends_grocery, keywords_grocery, "Grocery Stores 2026")
+st.header("Grocery Stores 🛒")
+st.write("lorem ipsum")
 
 keywords_grocery = [
     "is trader joes lettuce safe",
@@ -214,7 +208,11 @@ keywords_grocery = [
     "is aldi lettuce safe to eat",
     "is whole foods lettuce safe to eat"
 ]
-trends_grocery = get_trends(keywords_grocery, '2025-05-01 2025-09-01')
+trends_grocery = get_trends(keywords_grocery, '2026-07-01 2026-08-20')
+plot_trends(trends_grocery, keywords_grocery, "Grocery Stores 2026")
+
+
+trends_grocery = get_trends(keywords_grocery, '2025-05-01 2025-12-31')
 plot_trends(trends_grocery, keywords_grocery, "Grocery Stores 2025")
 
 
