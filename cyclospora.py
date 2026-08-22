@@ -227,12 +227,37 @@ keywords_grocery_berries = [
     "are walmart berries safe",
     "are whole foods berries safe"
 ]
-trends_grocery = get_trends(keywords_grocery_berries, '2026-07-01 2026-08-20')
-plot_trends(trends_grocery, keywords_grocery_berries, "Grocery Stores 2026")
 
+# Request both years together
+berries_all = get_trends(
+    keywords_grocery_berries,
+    "2025-07-01 2026-08-20"
+)
 
-trends_grocery = get_trends(keywords_grocery_berries, '2025-05-01 2025-12-31')
-plot_trends(trends_grocery, keywords_grocery_berries, "Grocery Stores 2025")
+if berries_all.empty:
+    st.info("Google Trends did not return enough data for these search terms.")
+else:
+    berries_2025 = berries_all[
+        (berries_all["date"] >= pd.Timestamp("2025-07-01")) &
+        (berries_all["date"] <= pd.Timestamp("2025-08-20"))
+    ]
+
+    berries_2026 = berries_all[
+        (berries_all["date"] >= pd.Timestamp("2026-07-01")) &
+        (berries_all["date"] <= pd.Timestamp("2026-08-20"))
+    ]
+
+    plot_trends(
+        berries_2026,
+        keywords_grocery_berries,
+        "Grocery Stores 2026"
+    )
+
+    plot_trends(
+        berries_2025,
+        keywords_grocery_berries,
+        "Grocery Stores 2025"
+    )
 
 
 # ---------------------------------------------------------------------------
