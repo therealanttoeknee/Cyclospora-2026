@@ -181,7 +181,7 @@ def plot_trends(trends_data, keywords, title):
 # Google Trends - Fast Food Chains
 # ---------------------------------------------------------------------------
 st.header("Google Trends 2026 vs. 2025")
-st.write("
+st.write("lorem ipsum")
 
 keywords_fastfood = [
     "is taco bell lettuce safe",
