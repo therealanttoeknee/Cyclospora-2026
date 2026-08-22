@@ -196,25 +196,43 @@ trends_fastfood = get_trends(keywords_fastfood, '2025-01-01 2025-12-01')
 plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chain Google Trend Interest (2025)")
 
 
+
 # ---------------------------------------------------------------------------
 # Google Trends - Grocery Stores
 # ---------------------------------------------------------------------------
+
 st.header("Grocery Stores 🛒")
-st.write("lorem ipsum")
+st.write("Similar to fast food, the average of the keywords below were up over 5,000% compared to 2025.")
 
-keywords_grocery = [
+keywords_grocery_lettuce = [
     "is trader joes lettuce safe",
-    "is costco lettuce safe to eat",
-    "is aldi lettuce safe to eat",
-    "is whole foods lettuce safe to eat"
+    "is costco lettuce safe",
+    "is walmart lettuce safe",
+    "is whole foods lettuce safe"
 ]
-trends_grocery = get_trends(keywords_grocery, '2026-07-01 2026-08-20')
-plot_trends(trends_grocery, keywords_grocery, "Grocery Stores 2026")
+trends_grocery = get_trends(keywords_grocery_lettuce, '2026-07-01 2026-08-20')
+plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2026")
 
 
-trends_grocery = get_trends(keywords_grocery, '2025-05-01 2025-12-31')
-plot_trends(trends_grocery, keywords_grocery, "Grocery Stores 2025")
+trends_grocery = get_trends(keywords_grocery_lettuce, '2025-05-01 2025-12-31')
+plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2025")
 
+st.write("Unlike fast food chains, however, grocery stores carry berries and berries are the other "
+         "type of produce that cyclospora spoils. Interestingly, people weren't searching if berries "
+         "from these stores were safe or not. ")
+
+keywords_grocery_berries = [
+    "are trader joes berries safe",
+    "are costco berries safe",
+    "are walmart berries safe",
+    "are whole foods berries safe"
+]
+trends_grocery = get_trends(keywords_grocery_berries, '2026-07-01 2026-08-20')
+plot_trends(trends_grocery, keywords_grocery_berries, "Grocery Stores 2026")
+
+
+trends_grocery = get_trends(keywords_grocery_berries, '2025-05-01 2025-12-31')
+plot_trends(trends_grocery, keywords_grocery_berries, "Grocery Stores 2025")
 
 
 # ---------------------------------------------------------------------------
