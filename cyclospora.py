@@ -228,37 +228,39 @@ keywords_grocery_berries = [
     "are whole foods berries safe"
 ]
 
-# Request both years together
-berries_all = get_trends(
+# Get 2025 and 2026 data together
+berry_trends = get_trends(
     keywords_grocery_berries,
     "2025-07-01 2026-08-20"
 )
 
-if berries_all.empty:
-    st.info("Google Trends did not return enough data for these search terms.")
+if berry_trends.empty:
+    st.write("Google Trends did not find enough data.")
 else:
-    berries_2025 = berries_all[
-        (berries_all["date"] >= pd.Timestamp("2025-07-01")) &
-        (berries_all["date"] <= pd.Timestamp("2025-08-20"))
+    # Select July 1 through August 20, 2025
+    berry_trends_2025 = berry_trends[
+        (berry_trends["date"] >= "2025-07-01") &
+        (berry_trends["date"] <= "2025-08-20")
     ]
 
-    berries_2026 = berries_all[
-        (berries_all["date"] >= pd.Timestamp("2026-07-01")) &
-        (berries_all["date"] <= pd.Timestamp("2026-08-20"))
+    # Select July 1 through August 20, 2026
+    berry_trends_2026 = berry_trends[
+        (berry_trends["date"] >= "2026-07-01") &
+        (berry_trends["date"] <= "2026-08-20")
     ]
 
     plot_trends(
-        berries_2026,
+        berry_trends_2026,
         keywords_grocery_berries,
         "Grocery Stores 2026"
     )
 
     plot_trends(
-        berries_2025,
+        berry_trends_2025,
         keywords_grocery_berries,
         "Grocery Stores 2025"
     )
-
+    
 
 # ---------------------------------------------------------------------------
 # Google Trends - Home Cooking Shift
