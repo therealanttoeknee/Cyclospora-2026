@@ -181,7 +181,9 @@ def plot_trends(trends_data, keywords, title):
 # Google Trends - Fast Food Chains
 # ---------------------------------------------------------------------------
 st.header("Fast Food 🍔")
-st.write("Compared to 2025, the average of these keywords were up over 5,000% compared to 2025.")
+st.write("The average search interest of these keywords was up over 5,000% in 2026 compared to 2025."
+         "Search results first increased on July 17th, the same day Taylor Farms de Mexico "
+         "announced they removing all iceberg lettuce sourced from central Mexico from the U.S. market.  ")
 
 keywords_fastfood = [
     "is taco bell lettuce safe",
@@ -198,11 +200,11 @@ plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chain Google Trend In
 
 
 # ---------------------------------------------------------------------------
-# Google Trends - Grocery Stores
+# Google Trends - Grocery Stores (Lettuce)
 # ---------------------------------------------------------------------------
 
 st.header("Grocery Stores 🛒")
-st.write("Similar to fast food, the average of the keywords below were up over 5,000% compared to 2025.")
+st.write("Similar to fast food, the average of the keywords below was up over 5,000% in 2026 compared to 2025.")
 
 keywords_grocery_lettuce = [
     "is trader joes lettuce safe",
@@ -217,13 +219,23 @@ plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2026")
 trends_grocery = get_trends(keywords_grocery_lettuce, '2025-05-01 2025-12-31')
 plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2025")
 
+st.write("Search results for these grocery chains, however, were less persistent than the search results for fast food chains.")
+
+keywords_grocery_lettuce_vs = [
+    "is taco bell lettuce safe",
+    "is walmart lettuce safe"
+]
+
+trends_grocery = get_trends(keywords_grocery_lettuce_vs, '2026-07-01 2026-08-20')
+plot_trends(trends_grocery, keywords_grocery_lettuce_vs, "Grocery Stores 2026")
+
+
+# --------------------------------------------------
+# Google Trends - Grocery Stores (Basil and Cilantro)
+# --------------------------------------------------
 st.write("Based on past outbreaks, Cyclospora also contaiminates fresh herbs like basil and cilantro. "
-         "Interestingly, people weren't searching if basil or cilantro from these stores were safe or not. ")
-
-# --------------------------------------------------
-# Basil searches
-# --------------------------------------------------
-
+         "Interestingly, people weren't searching if basil or cilantro from these stores were safe or not "
+         "around July 17th. "
 keywords_grocery_basil = [
     "is trader joes basil safe",
     "is costco basil safe",
