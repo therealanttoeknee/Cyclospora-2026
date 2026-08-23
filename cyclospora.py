@@ -235,7 +235,7 @@ plot_trends(trends_grocery, keywords_grocery_lettuce_vs, "Grocery Stores 2026")
 # --------------------------------------------------
 st.write("Based on past outbreaks, Cyclospora also contaiminates fresh herbs like basil and cilantro. "
          "Interestingly, people weren't searching if basil or cilantro from these stores were safe or not "
-         "around July 17th. "
+         "around July 17th. ")
 keywords_grocery_basil = [
     "is trader joes basil safe",
     "is costco basil safe",
