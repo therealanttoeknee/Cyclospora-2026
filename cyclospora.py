@@ -220,48 +220,87 @@ plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2025")
 st.write("Based on past outbreaks, Cyclospora also contaiminates fresh herbs like basil and cilantro. "
          "Interestingly, people weren't searching if basil or cilantro from these stores were safe or not. ")
 
-keywords_grocery_bas_cil = [
+# --------------------------------------------------
+# Basil searches
+# --------------------------------------------------
+
+keywords_grocery_basil = [
     "is trader joes basil safe",
     "is costco basil safe",
     "is walmart basil safe",
-    "is whole foods basil safe",
+    "is whole foods basil safe"
+]
+
+basil_trends = get_trends(
+    keywords_grocery_basil,
+    "2025-07-01 2026-08-20"
+)
+
+if basil_trends.empty:
+    st.write("Google Trends did not find enough basil data.")
+else:
+    basil_trends_2025 = basil_trends[
+        (basil_trends["date"] >= "2025-07-01") &
+        (basil_trends["date"] <= "2025-08-20")
+    ]
+
+    basil_trends_2026 = basil_trends[
+        (basil_trends["date"] >= "2026-07-01") &
+        (basil_trends["date"] <= "2026-08-20")
+    ]
+
+    plot_trends(
+        basil_trends_2026,
+        keywords_grocery_basil,
+        "Basil Safety Searches 2026"
+    )
+
+    plot_trends(
+        basil_trends_2025,
+        keywords_grocery_basil,
+        "Basil Safety Searches 2025"
+    )
+
+
+# --------------------------------------------------
+# Cilantro searches
+# --------------------------------------------------
+
+keywords_grocery_cilantro = [
     "is trader joes cilantro safe",
     "is costco cilantro safe",
     "is walmart cilantro safe",
     "is whole foods cilantro safe"
 ]
 
-# Get 2025 and 2026 data together
-bas_cil_trends = get_trends(
-    keywords_grocery_bas_cil,
+cilantro_trends = get_trends(
+    keywords_grocery_cilantro,
     "2025-07-01 2026-08-20"
 )
 
-if bas_cil_trends.empty:
-    st.write("Google Trends did not find enough data.")
+if cilantro_trends.empty:
+    st.write("Google Trends did not find enough cilantro data.")
 else:
-    # Select July 1 through August 20, 2025
-    bas_cil_trends_2025 = bas_cil_trends[
-        (bas_cil_trends["date"] >= "2025-07-01") &
-        (bas_cil_trends["date"] <= "2025-08-20")
+    cilantro_trends_2025 = cilantro_trends[
+        (cilantro_trends["date"] >= "2025-07-01") &
+        (cilantro_trends["date"] <= "2025-08-20")
     ]
 
-    # Select July 1 through August 20, 2026
-    bas_cil_trends_2026 = bas_cil_trends[
-        (bas_cil_trends["date"] >= "2026-07-01") &
-        (bas_cil_trends["date"] <= "2026-08-20")
+    cilantro_trends_2026 = cilantro_trends[
+        (cilantro_trends["date"] >= "2026-07-01") &
+        (cilantro_trends["date"] <= "2026-08-20")
     ]
 
     plot_trends(
-        bas_cil_trends_2026,
-        keywords_grocery_bas_cil,
-        "Grocery Stores 2026"
+        cilantro_trends_2026,
+        keywords_grocery_cilantro,
+        "Cilantro Safety Searches 2026"
     )
 
     plot_trends(
-        bas_cil_trends_2025,
-        keywords_grocery_bas_cil,
-        "Grocery Stores 2025"
+        cilantro_trends_2025,
+        keywords_grocery_cilantro,
+        "Cilantro Safety Searches 2025"
     )
     
 
