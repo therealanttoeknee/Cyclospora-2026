@@ -181,7 +181,7 @@ def plot_trends(trends_data, keywords, title):
 # Google Trends - Fast Food Chains
 # ---------------------------------------------------------------------------
 st.header("Fast Food 🍔")
-st.write("The average search interest of these keywords was up over 5,000% in 2026 compared to 2025.
+st.write("The average search interest of these keywords was up over 5,000% in 2026 compared to 2025. "
          "Search results first increased on July 17th, the same day Taylor Farms de Mexico "
          "announced they removing all iceberg lettuce sourced from central Mexico from the U.S. market. "
          "Taylor Farms was the main supplier of iceberg lettuce for Taco Bell. ")
