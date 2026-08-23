@@ -323,27 +323,34 @@ else:
 # ---------------------------------------------------------------------------
 # Google Trends - Home Cooking Shift
 # ---------------------------------------------------------------------------
+
 st.header("Home Cooking 🍳")
-
+st.write("Despite consumers knowing which lettuce brand was contaminated, people were "
+         "still concerned with the fruits and vegtebles they bought. "
+         "Google searches for 'how to wash fruit' and 'how to wash vegetables' were more persistent" 
+         "this year compared to last year. Even 'how to wash lettuce' was more popular this year"
+         "than last year. Search results for 'how to wash fruit' and 'how to wash vegetables' "
+         "were steady in the beginning of the year than rose significantly in mid-July when "
+         "the outbreak happened. I think these early results were people simply learning "
+         "how to clean produce. We've seen this on social media platforms where content creators "
+         "educate their audience on the right way to clean their store-bought produce.")
 
 keywords_homecooking = [
     "how to wash fruit",
-    "how to wash vegetables"
+    "how to wash vegetables",
+    "how to wash lettuce"
 ]
 
-trends_homecooking = get_trends(keywords_homecooking, '2026-05-01 2026-08-13')
-plot_trends(trends_homecooking, keywords_homecooking, "Home Cooking Habits 2026")
+trends_homecooking = get_trends(keywords_homecooking, '2026-01-01 2026-08-20')
+plot_trends(trends_homecooking, keywords_homecooking, "Home Cooking Habits (2026)")
 
-keywords_homecooking = [
-    "how to wash fruit",
-    "how to wash vegetables"
-]
- 
-trends_homecooking = get_trends(keywords_homecooking, '2025-05-01 2025-09-01')
-plot_trends(trends_homecooking, keywords_homecooking, "Home Cooking Habits 2025")
+trends_homecooking = get_trends(keywords_homecooking, '2025-01-01 2025-08-20')
+plot_trends(trends_homecooking, keywords_homecooking, "Home Cooking Habits (2025)")
 
+# ---------------------------------------------------------------------------
+# Produce Prices
+# ---------------------------------------------------------------------------
 
-#Produce prices
 st.header("Produce Prices")
 
 amc["report_date"] = pd.to_datetime(amc["report_date"])
