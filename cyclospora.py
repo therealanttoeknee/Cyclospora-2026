@@ -222,7 +222,7 @@ plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2025")
 st.write("Search results for these grocery chains, however, were less persistent than the search results for fast food chains.")
 
 keywords_grocery_lettuce_vs = [
-    "is taco bell lettuce safe",
+    "is chipotle lettuce safe",
     "is walmart lettuce safe"
 ]
 
