@@ -217,47 +217,50 @@ plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2026")
 trends_grocery = get_trends(keywords_grocery_lettuce, '2025-05-01 2025-12-31')
 plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2025")
 
-st.write("Unlike fast food chains, however, grocery stores carry berries and berries are the other "
-         "type of produce that cyclospora spoils. Interestingly, people weren't searching if berries "
-         "from these stores were safe or not. ")
+st.write("Based on past outbreaks, Cyclospora also contaiminates fresh herbs like basil and cilantro. "
+         "Interestingly, people weren't searching if basil or cilantro from these stores were safe or not. ")
 
-keywords_grocery_berries = [
-    "are trader joes berries safe",
-    "are costco berries safe",
-    "are walmart berries safe",
-    "are whole foods berries safe"
+keywords_grocery_bas_cil = [
+    "is trader joes basil safe",
+    "is costco basil safe",
+    "is walmart basil safe",
+    "is whole foods basil safe",
+    "is trader joes cilantro safe",
+    "is costco cilantro safe",
+    "is walmart cilantro safe",
+    "is whole foods cilantro safe"
 ]
 
 # Get 2025 and 2026 data together
-berry_trends = get_trends(
-    keywords_grocery_berries,
+bas_cil_trends = get_trends(
+    keywords_grocery_bas_cil,
     "2025-07-01 2026-08-20"
 )
 
-if berry_trends.empty:
+if bas_cil_trends.empty:
     st.write("Google Trends did not find enough data.")
 else:
     # Select July 1 through August 20, 2025
-    berry_trends_2025 = berry_trends[
-        (berry_trends["date"] >= "2025-07-01") &
-        (berry_trends["date"] <= "2025-08-20")
+    bas_cil_trends_2025 = bas_cil_trends[
+        (bas_cil_trends["date"] >= "2025-07-01") &
+        (bas_cil_trends["date"] <= "2025-08-20")
     ]
 
     # Select July 1 through August 20, 2026
-    berry_trends_2026 = berry_trends[
-        (berry_trends["date"] >= "2026-07-01") &
-        (berry_trends["date"] <= "2026-08-20")
+    bas_cil_trends_2026 = bas_cil_trends[
+        (bas_cil_trends["date"] >= "2026-07-01") &
+        (bas_cil_trends["date"] <= "2026-08-20")
     ]
 
     plot_trends(
-        berry_trends_2026,
-        keywords_grocery_berries,
+        bas_cil_trends_2026,
+        keywords_grocery_bas_cil,
         "Grocery Stores 2026"
     )
 
     plot_trends(
-        berry_trends_2025,
-        keywords_grocery_berries,
+        bas_cil_trends_2025,
+        keywords_grocery_bas_cil,
         "Grocery Stores 2025"
     )
     
