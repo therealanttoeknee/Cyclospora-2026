@@ -214,13 +214,15 @@ keywords_grocery_lettuce = [
     "is whole foods lettuce safe"
 ]
 trends_grocery = get_trends(keywords_grocery_lettuce, '2026-07-01 2026-08-20')
-plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2026")
+plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Store Google Trend Interest (2026)")
 
 
 trends_grocery = get_trends(keywords_grocery_lettuce, '2025-05-01 2025-12-31')
-plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Stores 2025")
+plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Store Google Trend Interest (2025)")
 
-st.write("Search results for these grocery chains, however, were less persistent than the search results for fast food chains.")
+st.write("Search results for these grocery chains, however, were less persistent than the search results for fast food chains. 
+         "People were searching about lettuce safety in fast food chains than grocery stores. This might be because want to know "
+         "which fast food chain they can safely eat at where as grocery stores carry different lettuce/salads brands.")
 
 keywords_grocery_lettuce_vs = [
     "is chipotle lettuce safe",
@@ -228,7 +230,7 @@ keywords_grocery_lettuce_vs = [
 ]
 
 trends_grocery = get_trends(keywords_grocery_lettuce_vs, '2026-07-01 2026-08-20')
-plot_trends(trends_grocery, keywords_grocery_lettuce_vs, "Grocery Stores 2026")
+plot_trends(trends_grocery, keywords_grocery_lettuce_vs, "Fast Food vs. Grocery Store Interest (2026)")
 
 
 # --------------------------------------------------
@@ -237,6 +239,7 @@ plot_trends(trends_grocery, keywords_grocery_lettuce_vs, "Grocery Stores 2026")
 st.write("Based on past outbreaks, Cyclospora also contaiminates fresh herbs like basil and cilantro. "
          "Interestingly, people weren't searching if basil or cilantro from these stores were safe or not "
          "around July 17th. ")
+
 keywords_grocery_basil = [
     "is trader joes basil safe",
     "is costco basil safe",
@@ -265,13 +268,13 @@ else:
     plot_trends(
         basil_trends_2026,
         keywords_grocery_basil,
-        "Basil Safety Searches 2026"
+        "Grocery Store Basil Safety Searches (2026)"
     )
 
     plot_trends(
         basil_trends_2025,
         keywords_grocery_basil,
-        "Basil Safety Searches 2025"
+        "Grocery Store Basil Safety Searches (2025)"
     )
 
 
@@ -307,19 +310,21 @@ else:
     plot_trends(
         cilantro_trends_2026,
         keywords_grocery_cilantro,
-        "Cilantro Safety Searches 2026"
+        "Grocery Store Cilantro Safety Searches (2026)"
     )
 
     plot_trends(
         cilantro_trends_2025,
         keywords_grocery_cilantro,
-        "Cilantro Safety Searches 2025"
+        "Grocery Store Cilantro Safety Searches (2025)"
     )
     
 
 # ---------------------------------------------------------------------------
 # Google Trends - Home Cooking Shift
 # ---------------------------------------------------------------------------
+
+
 keywords_homecooking = [
     "how to wash fruit",
     "how to wash vegetables"
