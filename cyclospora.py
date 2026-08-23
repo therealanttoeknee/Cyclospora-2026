@@ -220,7 +220,7 @@ plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Store Google Tren
 trends_grocery = get_trends(keywords_grocery_lettuce, '2025-05-01 2025-12-31')
 plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Store Google Trend Interest (2025)")
 
-st.write("Search results for these grocery chains, however, were less persistent than the search results for fast food chains. 
+st.write("Search results for these grocery chains, however, were less persistent than the search results for fast food chains. "
          "People were searching about lettuce safety in fast food chains than grocery stores. This might be because want to know "
          "which fast food chain they can safely eat at where as grocery stores carry different lettuce/salads brands.")
 
