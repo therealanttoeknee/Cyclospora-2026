@@ -372,7 +372,7 @@ high = (
     .sort_values("report_date")
 )
 
-fig1 = px.line(high, x="report_date", y="high_price", color="commodity", title="High Price 2026")
+fig1 = px.line(high, x="report_date", y="high_price", color="commodity", title="Produce High Price (2026)")
 st.plotly_chart(fig1)
 
 fig1.update_xaxes(
@@ -389,7 +389,7 @@ low = (
     .sort_values("report_date")
 )
 
-fig2 = px.line(low, x="report_date", y="low_price", color="commodity", title="Low Price 2026")
+fig2 = px.line(low, x="report_date", y="low_price", color="commodity", title="Produce Low Price (2026)")
 st.plotly_chart(fig2)
 
 fig2.update_xaxes(
