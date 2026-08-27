@@ -353,7 +353,7 @@ plot_trends(trends_homecooking, keywords_homecooking, "Home Cooking Habits (2025
 
 st.header("Produce Prices")
 st.write("Lastly, wholesale lettuce prices fell 73% during July. Even though iceberg lettuce was affected, we see that prices "
-         "for other types of lettuce also decreased. "
+         "for other types of lettuce also decreased. ")
 
 amc["report_date"] = pd.to_datetime(amc["report_date"])
 
