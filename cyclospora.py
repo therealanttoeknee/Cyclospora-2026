@@ -209,7 +209,7 @@ def plot_trends(trends_data, keywords, title):
 # Google Trends - Fast Food Chains
 # ---------------------------------------------------------------------------
 st.header("Fast Food 🍔")
-st.write("The average search interest of these keywords was up over 5,000% in 2026 compared to 2025. "
+st.write("The average search interest of these keywords was up over 5,000% in 2026 compared to . "
          "Search results first increased on July 17th, the same day Taylor Farms de Mexico "
          "announced they removing all iceberg lettuce sourced from central Mexico from the U.S. market. "
          "Taylor Farms was the main supplier of iceberg lettuce for Taco Bell. ")
@@ -223,16 +223,16 @@ keywords_fastfood = [
 
 fastfood_all = get_trends(
     keywords_fastfood,
-    "2025-07-10 2026-08-10"
+    "-07-10 2026-08-10"
 )
 
 if not fastfood_all.empty:
     fastfood_all["date"] = pd.to_datetime(fastfood_all["date"])
 
-    fastfood_2025 = fastfood_all[
+    fastfood_ = fastfood_all[
         fastfood_all["date"].between(
-            "2025-06-10",
-            "2025-08-10"
+            "-06-10",
+            "-08-10"
         )
     ]
 
@@ -250,9 +250,9 @@ if not fastfood_all.empty:
     )
 
     plot_trends(
-        fastfood_2025,
+        fastfood_,
         keywords_fastfood,
-        "Fast Food Chain Google Trend Interest (2025)"
+        "Fast Food Chain Google Trend Interest ()"
     )
 
 
@@ -262,7 +262,7 @@ if not fastfood_all.empty:
 # ---------------------------------------------------------------------------
 
 st.header("Grocery Stores 🛒")
-st.write("Similar to fast food, the average of the keywords below was up over 5,000% in 2026 compared to 2025.")
+st.write("Similar to fast food, the average of the keywords below was up over 5,000% in 2026 compared to .")
 
 keywords_grocery_lettuce = [
     "is trader joes lettuce safe",
@@ -274,7 +274,7 @@ trends_grocery = get_trends(keywords_grocery_lettuce, '2026-06-01 2026-08-20')
 plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Store Google Trend Interest (2026)")
 
 
-trends_grocery = get_trends(keywords_grocery_lettuce, '2025-05-01 2025-12-31')
+trends_grocery = get_trends(keywords_grocery_lettuce, '2025-06-01 2025-08-20')
 plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Store Google Trend Interest (2025)")
 
 st.write("Search results for these grocery chains, however, were less persistent than the search results for fast food chains. "
