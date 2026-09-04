@@ -149,20 +149,49 @@ st.write("Note: The true number of people sick with cyclosporiasis is likely hig
 # ---------------------------------------------------------------------------
 # Google Trends helper (cached + retries + graceful failure)
 # ---------------------------------------------------------------------------
-@st.cache_data(ttl=3600, show_spinner="Fetching Google Trends data...")
-def get_trends(keywords, timeframe, geo='US'):
-    """
-    Fetch Google Trends interest-over-time for a list of keywords.
-    Cached for 1 hour so Streamlit reruns don't re-hit Google and
-    trigger 429 (TooManyRequestsError).
-    """
+@st.cache_data(
+    ttl=3600,
+    show_spinner="Fetching Google Trends data..."
+)
+def _fetch_trends(keywords, timeframe, geo):
+    pytrends = TrendReq(
+        hl="en-US",
+        tz=360,
+        timeout=(10, 30)
+    )
+
+    pytrends.build_payload(
+        kw_list=list(keywords),
+        timeframe=timeframe,
+        geo=geo
+    )
+
+    df = pytrends.interest_over_time()
+
+    if df.empty:
+        raise ValueError("Google Trends returned an empty dataset.")
+
+    return (
+        df.drop(columns=["isPartial"], errors="ignore")
+        .reset_index()
+    )
+
+
+def get_trends(keywords, timeframe, geo="US"):
+    # Prevent a single keyword string from becoming a tuple of characters
+    if isinstance(keywords, str):
+        keywords = (keywords,)
+    else:
+        keywords = tuple(keywords)
+
     try:
-        pytrends = TrendReq(hl='en-US', tz=360, retries=3, backoff_factor=1.0)
-        pytrends.build_payload(keywords, timeframe=timeframe, geo=geo)
-        df = pytrends.interest_over_time()
-        return df.reset_index()
+        return _fetch_trends(keywords, timeframe, geo)
+
     except Exception as e:
-        st.warning(f"Google Trends request failed for {keywords}: {e}")
+        st.error(
+            f"Google Trends request failed: "
+            f"{type(e).__name__}: {e}"
+        )
         return pd.DataFrame()
 
 
