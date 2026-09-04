@@ -231,14 +231,14 @@ if not fastfood_all.empty:
 
     fastfood_2025 = fastfood_all[
         fastfood_all["date"].between(
-            "2025-07-10",
+            "2025-06-10",
             "2025-08-10"
         )
     ]
 
     fastfood_2026 = fastfood_all[
         fastfood_all["date"].between(
-            "2026-07-10",
+            "2026-06-10",
             "2026-08-10"
         )
     ]
@@ -270,7 +270,7 @@ keywords_grocery_lettuce = [
     "is walmart lettuce safe",
     "is whole foods lettuce safe"
 ]
-trends_grocery = get_trends(keywords_grocery_lettuce, '2026-07-01 2026-08-20')
+trends_grocery = get_trends(keywords_grocery_lettuce, '2026-06-01 2026-08-20')
 plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Store Google Trend Interest (2026)")
 
 
@@ -286,7 +286,7 @@ keywords_grocery_lettuce_vs = [
     "is walmart lettuce safe"
 ]
 
-trends_grocery = get_trends(keywords_grocery_lettuce_vs, '2026-07-01 2026-08-20')
+trends_grocery = get_trends(keywords_grocery_lettuce_vs, '2026-06-01 2026-08-20')
 plot_trends(trends_grocery, keywords_grocery_lettuce_vs, "Fast Food vs. Grocery Store Interest (2026)")
 
 
