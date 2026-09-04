@@ -192,10 +192,10 @@ keywords_fastfood = [
     "is burger king lettuce safe",
     "is chipotle lettuce safe"
 ]
-trends_fastfood = get_trends(keywords_fastfood, '2026-06-01 2026-08-31')
+trends_fastfood = get_trends(keywords_fastfood, '2026-07-10 2026-08-10')
 plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chain Google Trend Interest (2026)")
 
-trends_fastfood = get_trends(keywords_fastfood, '2025-06-01 2025-08-31')
+trends_fastfood = get_trends(keywords_fastfood, '2025-07-10 2025-08-10')
 plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chain Google Trend Interest (2025)")
 
 
