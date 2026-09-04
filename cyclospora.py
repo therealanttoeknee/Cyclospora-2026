@@ -176,25 +176,6 @@ def _fetch_trends(keywords, timeframe, geo):
         .reset_index()
     )
 
-
-def get_trends(keywords, timeframe, geo="US"):
-    # Prevent a single keyword string from becoming a tuple of characters
-    if isinstance(keywords, str):
-        keywords = (keywords,)
-    else:
-        keywords = tuple(keywords)
-
-    try:
-        return _fetch_trends(keywords, timeframe, geo)
-
-    except Exception as e:
-        st.error(
-            f"Google Trends request failed: "
-            f"{type(e).__name__}: {e}"
-        )
-        return pd.DataFrame()
-
-
 def plot_trends(trends_data, keywords, title):
     """Plot trends data if available, otherwise show a friendly message."""
     if trends_data.empty:
