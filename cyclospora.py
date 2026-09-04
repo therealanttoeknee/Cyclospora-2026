@@ -176,6 +176,24 @@ def _fetch_trends(keywords, timeframe, geo):
         .reset_index()
     )
 
+def get_trends(keywords, timeframe, geo="US"):
+    """Prepare arguments, call the cached function, and display errors."""
+
+    if isinstance(keywords, str):
+        keywords = (keywords,)
+    else:
+        keywords = tuple(keywords)
+
+    try:
+        return _fetch_trends(keywords, timeframe, geo)
+
+    except Exception as e:
+        st.error(
+            f"Google Trends request failed for {keywords}: "
+            f"{type(e).__name__}: {e}"
+        )
+        return pd.DataFrame()
+
 def plot_trends(trends_data, keywords, title):
     """Plot trends data if available, otherwise show a friendly message."""
     if trends_data.empty:
@@ -202,11 +220,40 @@ keywords_fastfood = [
     "is burger king lettuce safe",
     "is chipotle lettuce safe"
 ]
-trends_fastfood = get_trends(keywords_fastfood, '2026-07-10 2026-08-10')
-plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chain Google Trend Interest (2026)")
 
-trends_fastfood = get_trends(keywords_fastfood, '2025-07-10 2025-08-10')
-plot_trends(trends_fastfood, keywords_fastfood, "Fast Food Chain Google Trend Interest (2025)")
+fastfood_all = get_trends(
+    keywords_fastfood,
+    "2025-07-10 2026-08-10"
+)
+
+if not fastfood_all.empty:
+    fastfood_all["date"] = pd.to_datetime(fastfood_all["date"])
+
+    fastfood_2025 = fastfood_all[
+        fastfood_all["date"].between(
+            "2025-07-10",
+            "2025-08-10"
+        )
+    ]
+
+    fastfood_2026 = fastfood_all[
+        fastfood_all["date"].between(
+            "2026-07-10",
+            "2026-08-10"
+        )
+    ]
+
+    plot_trends(
+        fastfood_2026,
+        keywords_fastfood,
+        "Fast Food Chain Google Trend Interest (2026)"
+    )
+
+    plot_trends(
+        fastfood_2025,
+        keywords_fastfood,
+        "Fast Food Chain Google Trend Interest (2025)"
+    )
 
 
 
