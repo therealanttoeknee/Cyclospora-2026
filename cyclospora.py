@@ -8,6 +8,11 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import hashlib
+import json
+import random
+import time
+from pathlib import Path
 from pytrends.request import TrendReq
 
 # ---------------------------------------------------------------------------
@@ -147,71 +152,176 @@ st.write("Note: The true number of people sick with cyclosporiasis is likely hig
 "not tested for Cyclospora.")
 
 # ---------------------------------------------------------------------------
-# Google Trends helper (cached + retries + graceful failure)
+# Google Trends helper
+#
+# Why this is more reliable:
+# 1. Each keyword group is downloaded once for both 2025 and 2026.
+# 2. Successful downloads are saved locally and reused on later app runs.
+# 3. Requests are spaced out and retried with backoff.
+# 4. A temporary Google failure returns an empty DataFrame instead of exposing
+#    a technical exception in the Streamlit UI.
 # ---------------------------------------------------------------------------
-@st.cache_data(
-    ttl=3600,
-    show_spinner="Fetching Google Trends data..."
-)
-def _fetch_trends(keywords, timeframe, geo):
-    pytrends = TrendReq(
-        hl="en-US",
-        tz=360,
-        timeout=(10, 30)
+TRENDS_CACHE_DIR = Path("data/google_trends_cache")
+try:
+    TRENDS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    # Some hosted environments use a read-only filesystem. The in-memory
+    # Streamlit cache below still prevents repeated calls within the session.
+    pass
+
+_last_trends_request_at = 0.0
+
+
+def _trends_cache_path(keywords, timeframe, geo):
+    """Return a stable cache filename for one exact Trends request."""
+    request_key = json.dumps(
+        {
+            "keywords": list(keywords),
+            "timeframe": timeframe,
+            "geo": geo,
+        },
+        sort_keys=True,
     )
+    digest = hashlib.sha256(request_key.encode("utf-8")).hexdigest()[:16]
+    return TRENDS_CACHE_DIR / f"trends_{digest}.csv"
 
-    pytrends.build_payload(
-        kw_list=list(keywords),
-        timeframe=timeframe,
-        geo=geo
-    )
 
-    df = pytrends.interest_over_time()
-
-    if df.empty:
-        raise ValueError("Google Trends returned an empty dataset.")
-
-    return (
-        df.drop(columns=["isPartial"], errors="ignore")
-        .reset_index()
-    )
-
-def get_trends(keywords, timeframe, geo="US"):
-    """Prepare arguments, call the cached function, and display errors."""
-
-    if isinstance(keywords, str):
-        keywords = (keywords,)
-    else:
-        keywords = tuple(keywords)
-
-    try:
-        return _fetch_trends(keywords, timeframe, geo)
-
-    except Exception as e:
-        st.error(
-            f"Google Trends request failed for {keywords}: "
-            f"{type(e).__name__}: {e}"
-        )
+def _read_trends_cache(cache_path):
+    """Read a previously successful download, if one exists."""
+    if not cache_path.exists():
         return pd.DataFrame()
 
-def plot_trends(trends_data, keywords, title):
-    """Plot trends data if available, otherwise show a friendly message."""
+    try:
+        cached = pd.read_csv(cache_path, parse_dates=["date"])
+        return cached if not cached.empty else pd.DataFrame()
+    except (OSError, ValueError, pd.errors.ParserError):
+        return pd.DataFrame()
+
+
+def _write_trends_cache(df, cache_path):
+    """Save data atomically so an interrupted write cannot corrupt the cache."""
+    temporary_path = cache_path.with_suffix(".tmp")
+    df.to_csv(temporary_path, index=False)
+    temporary_path.replace(cache_path)
+
+
+def _space_out_trends_requests(minimum_gap_seconds=2.0):
+    """Avoid sending several Google Trends requests at the same instant."""
+    global _last_trends_request_at
+
+    elapsed = time.monotonic() - _last_trends_request_at
+    if elapsed < minimum_gap_seconds:
+        time.sleep(minimum_gap_seconds - elapsed)
+
+
+@st.cache_data(ttl=6 * 60 * 60, show_spinner=False)
+def _download_trends(keywords, timeframe, geo):
+    """Download Trends data with a small retry/backoff policy."""
+    global _last_trends_request_at
+
+    for attempt in range(2):
+        try:
+            _space_out_trends_requests()
+
+            pytrends = TrendReq(
+                hl="en-US",
+                tz=360,
+                timeout=(10, 30),
+                requests_args={
+                    "headers": {
+                        "User-Agent": (
+                            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/131.0 Safari/537.36"
+                        )
+                    }
+                },
+            )
+            pytrends.build_payload(
+                kw_list=list(keywords),
+                timeframe=timeframe,
+                geo=geo,
+            )
+            downloaded = pytrends.interest_over_time()
+            _last_trends_request_at = time.monotonic()
+
+            if downloaded.empty:
+                return pd.DataFrame()
+
+            downloaded = (
+                downloaded.drop(columns=["isPartial"], errors="ignore")
+                .reset_index()
+            )
+            downloaded["date"] = pd.to_datetime(downloaded["date"])
+            return downloaded
+
+        except Exception:
+            _last_trends_request_at = time.monotonic()
+            if attempt == 0:
+                time.sleep(5 + random.random())
+
+    return pd.DataFrame()
+
+
+def get_trends(keywords, timeframe, geo="US"):
+    """Use saved Trends data first; download it only when it is not cached."""
+    keywords = (keywords,) if isinstance(keywords, str) else tuple(keywords)
+    cache_path = _trends_cache_path(keywords, timeframe, geo)
+
+    cached = _read_trends_cache(cache_path)
+    if not cached.empty:
+        return cached
+
+    downloaded = _download_trends(keywords, timeframe, geo)
+    if not downloaded.empty:
+        try:
+            _write_trends_cache(downloaded, cache_path)
+        except OSError:
+            # Streamlit's in-memory cache still prevents repeat calls during
+            # this session if the deployment filesystem is read-only.
+            pass
+
+    return downloaded
+
+
+def trends_between(trends_data, start_date, end_date):
+    """Return a date slice without making another Google request."""
     if trends_data.empty:
-        st.info(f"Trends data unavailable right now for '{title}' — try again later.")
+        return pd.DataFrame()
+
+    dates = pd.to_datetime(trends_data["date"])
+    return trends_data.loc[
+        dates.between(pd.Timestamp(start_date), pd.Timestamp(end_date))
+    ].copy()
+
+def plot_trends(trends_data, keywords, title):
+    """Plot Trends data without exposing request errors to app visitors."""
+    if trends_data.empty:
+        st.caption(f"No Google Trends observations are available for {title}.")
         return
-    # isPartial column can exist and isn't something we want plotted
+
     y_cols = [k for k in keywords if k in trends_data.columns]
-    fig = px.line(trends_data, x="date", y=y_cols, title=title, labels={"value": "Popularity"})
-    st.plotly_chart(fig)
+    if not y_cols:
+        st.caption(f"No Google Trends observations are available for {title}.")
+        return
+
+    fig = px.line(
+        trends_data,
+        x="date",
+        y=y_cols,
+        title=title,
+        labels={"value": "Search interest", "variable": "Search term"},
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 
 # ---------------------------------------------------------------------------
 # Google Trends - Fast Food Chains
 # ---------------------------------------------------------------------------
 st.header("Fast Food 🍔")
-st.write("The average search interest of these keywords was up over 5,000% in 2026 compared to . "
+st.write("The average search interest of these keywords was up over 5,000% in 2026 compared to 2025. "
          "Search results first increased on July 17th, the same day Taylor Farms de Mexico "
-         "announced they removing all iceberg lettuce sourced from central Mexico from the U.S. market. "
+         "announced they were removing all iceberg lettuce sourced from central Mexico from the U.S. market. "
          "Taylor Farms was the main supplier of iceberg lettuce for Taco Bell. ")
 
 keywords_fastfood = [
@@ -223,37 +333,23 @@ keywords_fastfood = [
 
 fastfood_all = get_trends(
     keywords_fastfood,
-    "-07-10 2026-08-10"
+    "2025-06-10 2026-08-10"
 )
 
-if not fastfood_all.empty:
-    fastfood_all["date"] = pd.to_datetime(fastfood_all["date"])
+fastfood_2026 = trends_between(fastfood_all, "2026-06-10", "2026-08-10")
+fastfood_2025 = trends_between(fastfood_all, "2025-06-10", "2025-08-10")
 
-    fastfood_ = fastfood_all[
-        fastfood_all["date"].between(
-            "-06-10",
-            "-08-10"
-        )
-    ]
+plot_trends(
+    fastfood_2026,
+    keywords_fastfood,
+    "Fast Food Chain Google Trend Interest (2026)"
+)
 
-    fastfood_2026 = fastfood_all[
-        fastfood_all["date"].between(
-            "2026-06-10",
-            "2026-08-10"
-        )
-    ]
-
-    plot_trends(
-        fastfood_2026,
-        keywords_fastfood,
-        "Fast Food Chain Google Trend Interest (2026)"
-    )
-
-    plot_trends(
-        fastfood_,
-        keywords_fastfood,
-        "Fast Food Chain Google Trend Interest ()"
-    )
+plot_trends(
+    fastfood_2025,
+    keywords_fastfood,
+    "Fast Food Chain Google Trend Interest (2025)"
+)
 
 
 
@@ -262,7 +358,7 @@ if not fastfood_all.empty:
 # ---------------------------------------------------------------------------
 
 st.header("Grocery Stores 🛒")
-st.write("Similar to fast food, the average of the keywords below was up over 5,000% in 2026 compared to .")
+st.write("Similar to fast food, the average of the keywords below was up over 5,000% in 2026 compared to 2025.")
 
 keywords_grocery_lettuce = [
     "is trader joes lettuce safe",
@@ -270,12 +366,31 @@ keywords_grocery_lettuce = [
     "is walmart lettuce safe",
     "is whole foods lettuce safe"
 ]
-trends_grocery = get_trends(keywords_grocery_lettuce, '2026-06-01 2026-08-20')
-plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Store Google Trend Interest (2026)")
+trends_grocery_all = get_trends(
+    keywords_grocery_lettuce,
+    "2025-06-01 2026-08-20"
+)
+trends_grocery_2026 = trends_between(
+    trends_grocery_all,
+    "2026-06-01",
+    "2026-08-20"
+)
+trends_grocery_2025 = trends_between(
+    trends_grocery_all,
+    "2025-06-01",
+    "2025-08-20"
+)
 
-
-trends_grocery = get_trends(keywords_grocery_lettuce, '2025-06-01 2025-08-20')
-plot_trends(trends_grocery, keywords_grocery_lettuce, "Grocery Store Google Trend Interest (2025)")
+plot_trends(
+    trends_grocery_2026,
+    keywords_grocery_lettuce,
+    "Grocery Store Google Trend Interest (2026)"
+)
+plot_trends(
+    trends_grocery_2025,
+    keywords_grocery_lettuce,
+    "Grocery Store Google Trend Interest (2025)"
+)
 
 st.write("Search results for these grocery chains, however, were less persistent than the search results for fast food chains. "
          "People were searching about lettuce safety in fast food chains than grocery stores. This might be because want to know "
@@ -312,15 +427,17 @@ basil_trends = get_trends(
 if basil_trends.empty:
     st.write("Google Trends did not find enough basil data.")
 else:
-    basil_trends_2025 = basil_trends[
-        (basil_trends["date"] >= "2025-07-01") &
-        (basil_trends["date"] <= "2025-08-20")
-    ]
+    basil_trends_2025 = trends_between(
+        basil_trends,
+        "2025-07-01",
+        "2025-08-20"
+    )
 
-    basil_trends_2026 = basil_trends[
-        (basil_trends["date"] >= "2026-07-01") &
-        (basil_trends["date"] <= "2026-08-20")
-    ]
+    basil_trends_2026 = trends_between(
+        basil_trends,
+        "2026-07-01",
+        "2026-08-20"
+    )
 
     plot_trends(
         basil_trends_2026,
@@ -354,15 +471,17 @@ cilantro_trends = get_trends(
 if cilantro_trends.empty:
     st.write("Google Trends did not find enough cilantro data.")
 else:
-    cilantro_trends_2025 = cilantro_trends[
-        (cilantro_trends["date"] >= "2025-07-01") &
-        (cilantro_trends["date"] <= "2025-08-20")
-    ]
+    cilantro_trends_2025 = trends_between(
+        cilantro_trends,
+        "2025-07-01",
+        "2025-08-20"
+    )
 
-    cilantro_trends_2026 = cilantro_trends[
-        (cilantro_trends["date"] >= "2026-07-01") &
-        (cilantro_trends["date"] <= "2026-08-20")
-    ]
+    cilantro_trends_2026 = trends_between(
+        cilantro_trends,
+        "2026-07-01",
+        "2026-08-20"
+    )
 
     plot_trends(
         cilantro_trends_2026,
@@ -398,11 +517,31 @@ keywords_homecooking = [
     "how to wash lettuce"
 ]
 
-trends_homecooking = get_trends(keywords_homecooking, '2026-01-01 2026-08-20')
-plot_trends(trends_homecooking, keywords_homecooking, "Home Cooking Habits (2026)")
+trends_homecooking_all = get_trends(
+    keywords_homecooking,
+    "2025-01-01 2026-08-20"
+)
+trends_homecooking_2026 = trends_between(
+    trends_homecooking_all,
+    "2026-01-01",
+    "2026-08-20"
+)
+trends_homecooking_2025 = trends_between(
+    trends_homecooking_all,
+    "2025-01-01",
+    "2025-08-20"
+)
 
-trends_homecooking = get_trends(keywords_homecooking, '2025-01-01 2025-08-20')
-plot_trends(trends_homecooking, keywords_homecooking, "Home Cooking Habits (2025)")
+plot_trends(
+    trends_homecooking_2026,
+    keywords_homecooking,
+    "Home Cooking Habits (2026)"
+)
+plot_trends(
+    trends_homecooking_2025,
+    keywords_homecooking,
+    "Home Cooking Habits (2025)"
+)
 
 # ---------------------------------------------------------------------------
 # Produce Prices
