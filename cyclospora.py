@@ -320,8 +320,7 @@ def plot_trends(trends_data, keywords, title):
 # Google Trends - Fast Food Chains
 # ---------------------------------------------------------------------------
 st.header("Fast Food 🍔")
-st.write("The average search interest of these keywords was up over 5,000% in 2026 compared to 2025. "
-         "Search results first increased on July 17th, the same day Taylor Farms de Mexico "
+st.write("Search results first increased on July 17th, the same day Taylor Farms de Mexico "
          "announced they were removing all iceberg lettuce sourced from central Mexico from the U.S. market. "
          "Taylor Farms was the main supplier of iceberg lettuce for Taco Bell. ")
 
@@ -338,7 +337,6 @@ fastfood_all = get_trends(
 )
 
 fastfood_2026 = trends_between(fastfood_all, "2026-06-10", "2026-08-10")
-fastfood_2025 = trends_between(fastfood_all, "2025-06-10", "2025-08-10")
 
 plot_trends(
     fastfood_2026,
@@ -346,20 +344,14 @@ plot_trends(
     "Fast Food Chain Google Trend Interest (2026)"
 )
 
-plot_trends(
-    fastfood_2025,
-    keywords_fastfood,
-    "Fast Food Chain Google Trend Interest (2025)"
-)
-
-
-
 # ---------------------------------------------------------------------------
 # Google Trends - Grocery Stores (Lettuce)
 # ---------------------------------------------------------------------------
 
 st.header("Grocery Stores 🛒")
-st.write("Similar to fast food, the average of the keywords below was up over 5,000% in 2026 compared to 2025.")
+st.write("Interestingly, search results for these grocery chains were less persistent than the search results for fast food chains. "
+         "People were searching about lettuce safety in fast food chains than grocery stores. This might be because want to know "
+         "which fast food chain they can safely eat at where as grocery stores carry different lettuce/salads brands.")
 
 keywords_grocery_lettuce = [
     "is trader joes lettuce safe",
@@ -376,26 +368,13 @@ trends_grocery_2026 = trends_between(
     "2026-06-01",
     "2026-08-20"
 )
-trends_grocery_2025 = trends_between(
-    trends_grocery_all,
-    "2025-06-01",
-    "2025-08-20"
-)
+
 
 plot_trends(
     trends_grocery_2026,
     keywords_grocery_lettuce,
     "Grocery Store Google Trend Interest (2026)"
 )
-plot_trends(
-    trends_grocery_2025,
-    keywords_grocery_lettuce,
-    "Grocery Store Google Trend Interest (2025)"
-)
-
-st.write("Search results for these grocery chains, however, were less persistent than the search results for fast food chains. "
-         "People were searching about lettuce safety in fast food chains than grocery stores. This might be because want to know "
-         "which fast food chain they can safely eat at where as grocery stores carry different lettuce/salads brands.")
 
 keywords_grocery_lettuce_vs = [
     "is chipotle lettuce safe",
@@ -404,7 +383,6 @@ keywords_grocery_lettuce_vs = [
 
 trends_grocery = get_trends(keywords_grocery_lettuce_vs, '2026-06-01 2026-08-20')
 plot_trends(trends_grocery, keywords_grocery_lettuce_vs, "Fast Food vs. Grocery Store Interest (2026)")
-
 
 # --------------------------------------------------
 # Google Trends - Grocery Stores (Basil and Cilantro)
@@ -446,13 +424,6 @@ else:
         "Grocery Store Basil Safety Searches (2026)"
     )
 
-    plot_trends(
-        basil_trends_2025,
-        keywords_grocery_basil,
-        "Grocery Store Basil Safety Searches (2025)"
-    )
-
-
 # --------------------------------------------------
 # Cilantro searches
 # --------------------------------------------------
@@ -489,13 +460,6 @@ else:
         keywords_grocery_cilantro,
         "Grocery Store Cilantro Safety Searches (2026)"
     )
-
-    plot_trends(
-        cilantro_trends_2025,
-        keywords_grocery_cilantro,
-        "Grocery Store Cilantro Safety Searches (2025)"
-    )
-    
 
 # ---------------------------------------------------------------------------
 # Google Trends - Home Cooking Shift
