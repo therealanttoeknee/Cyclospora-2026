@@ -64,14 +64,18 @@ state_abbrev = {
 
 # ---------------------------------------------------------------------------
 
-st.title("Cyclospora Outbreak  EDA") 
-st.text("Last update: 09/05/2026")
-st.text(
-    "Cyclospora finds its way into our lettuce and berries every summer, causing people "
-    "extreme stomach pains and fatigue. How did the 2026 Cyclospora outbreak affect "
-    "consumer concern and behavior around produce?"
+st.title("Cyclospora 2026 Outbreak EDA") 
+st.write(
+    "U.S. outbreaks of cyclosporiasis have repeatedly been linked to contaminated "
+    "fresh produce. In 2026, a major multistate outbreak was linked to processed "
+    "iceberg lettuce from central Mexico. This EDA examines how public concern, "
+    "food-safety searches, and wholesale produce prices changed during the outbreak."
 )
-st.header("2026 Progression")
+st.write("Note: The true number of people sick with cyclosporiasis is likely higher "
+"than the number reported below. Some people recover without medical care and are "
+"not tested for Cyclospora.")
+
+st.header("Progression")
 
 outbreak["State_Abbrev"] = outbreak["Location"].map(state_abbrev)
 
@@ -147,10 +151,6 @@ fig.update_traces(
 )
 
 st.plotly_chart(fig, use_container_width=True)
-
-st.write("Note: The true number of people sick with cyclosporiasis is likely higher "
-"than the number reported below. Some people recover without medical care and are "
-"not tested for Cyclospora.")
 
 # ---------------------------------------------------------------------------
 # Google Trends helper
@@ -320,9 +320,13 @@ def plot_trends(trends_data, keywords, title):
 # Google Trends - Fast Food Chains
 # ---------------------------------------------------------------------------
 st.header("Fast Food 🍔")
-st.write("Search results first increased on July 17th, the same day Taylor Farms de Mexico "
-         "announced they were removing all iceberg lettuce sourced from central Mexico from the U.S. market. "
-         "Taylor Farms was the main supplier of iceberg lettuce for Taco Bell. ")
+
+st.write(
+    "Search interest began to increase on July 17, the same day Taylor Farms de Mexico "
+    "announced that it was removing all iceberg lettuce sourced from central Mexico "
+    "from the U.S. market. Taylor Farms supplied the shredded iceberg lettuce served "
+    "at the Taco Bell locations associated with the outbreak."
+)
 
 keywords_fastfood = [
     "is taco bell lettuce safe",
@@ -349,9 +353,13 @@ plot_trends(
 # ---------------------------------------------------------------------------
 
 st.header("Grocery Stores 🛒")
-st.write("Interestingly, search results for these grocery chains were less persistent than the search results for fast food chains. "
-         "People were searching about lettuce safety in fast food chains than grocery stores. This might be because want to know "
-         "which fast food chain they can safely eat at where as grocery stores carry different lettuce/salads brands.")
+st.write(
+    "Compared with fast-food-related searches, search interest in lettuce safety at "
+    "grocery stores was less persistent. One possible explanation is that grocery "
+    "shoppers can choose among different lettuce brands or substitute another product, "
+    "while fast-food customers have less control over the source of the lettuce they "
+    "are served."
+)
 
 keywords_grocery_lettuce = [
     "is trader joes lettuce safe",
@@ -368,7 +376,6 @@ trends_grocery_2026 = trends_between(
     "2026-06-01",
     "2026-08-20"
 )
-
 
 plot_trends(
     trends_grocery_2026,
@@ -387,9 +394,12 @@ plot_trends(trends_grocery, keywords_grocery_lettuce_vs, "Fast Food vs. Grocery 
 # --------------------------------------------------
 # Google Trends - Grocery Stores (Basil and Cilantro)
 # --------------------------------------------------
-st.write("Based on past outbreaks, Cyclospora also contaiminates fresh herbs like basil and cilantro. "
-         "Interestingly, people weren't searching if basil or cilantro from these stores were safe or not "
-         "around July 17th. ")
+
+st.write(
+    "Past Cyclospora outbreaks have also been linked to fresh herbs such as basil "
+    "and cilantro. Interestingly, Google Trends showed little to no measurable search "
+    "interest in whether the basil or cilantro sold by these stores was safe."
+)
 
 keywords_grocery_basil = [
     "is trader joes basil safe",
@@ -466,15 +476,17 @@ else:
 # ---------------------------------------------------------------------------
 
 st.header("Home Cooking 🍳")
-st.write("Despite consumers knowing which lettuce brand was contaminated, people were "
-         "still concerned with the fruits and vegtebles they bought. "
-         "Google searches for 'how to wash fruit' and 'how to wash vegetables' were more persistent" 
-         "this year compared to last year. Even 'how to wash lettuce' was more popular this year"
-         "than last year. Search results for 'how to wash fruit' and 'how to wash vegetables' "
-         "were steady in the beginning of the year than rose significantly in mid-July when "
-         "the outbreak happened. I think these early results were people simply learning "
-         "how to clean produce. We've seen this on social media platforms where content creators "
-         "educate their audience on the right way to clean their store-bought produce.")
+st.write(
+    "Although the outbreak was linked to iceberg lettuce, search interest suggested "
+    "broader concern about produce safety. Searches for 'how to wash fruit' and "
+    "'how to wash vegetables' were more persistent in 2026 than during the same "
+    "period in 2025, while 'how to wash lettuce' also recorded greater interest. "
+    "Search interest was relatively steady early in 2026 before rising sharply in "
+    "mid-July, around the time the outbreak and recall received wider attention. "
+    "These patterns may indicate increased public interest in produce-cleaning "
+    "guidance, although search data alone cannot establish why people searched or "
+    "whether they changed their behavior."
+)
 
 keywords_homecooking = [
     "how to wash fruit",
@@ -513,8 +525,12 @@ plot_trends(
 # ---------------------------------------------------------------------------
 
 st.header("Produce Prices")
-st.write("Lastly, wholesale lettuce prices fell 73% during July. Even though iceberg lettuce was affected, we see that prices "
-         "for other types of lettuce also decreased. Other vegtebales like broccoli, cabbage, and carrots also decreased in value but prices remained higher when comparing them to lettuce prices.")
+st.write(
+    "Lastly, average wholesale lettuce prices fell by 73% during July. Although "
+    "the outbreak was linked to iceberg lettuce, prices for other lettuce varieties "
+    "also declined. Prices for broccoli, cabbage, and carrots decreased as well, "
+    "but remained higher than lettuce prices during the selected period."
+)
 
 amc["report_date"] = pd.to_datetime(amc["report_date"])
 
