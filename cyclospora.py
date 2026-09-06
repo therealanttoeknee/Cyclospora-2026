@@ -514,7 +514,7 @@ plot_trends(
 
 st.header("Produce Prices")
 st.write("Lastly, wholesale lettuce prices fell 73% during July. Even though iceberg lettuce was affected, we see that prices "
-         "for other types of lettuce also decreased. ")
+         "for other types of lettuce also decreased. Other vegtebales like broccoli, cabbage, and carrots also decreased in value but prices remained higher when comparing them to lettuce prices.")
 
 amc["report_date"] = pd.to_datetime(amc["report_date"])
 
